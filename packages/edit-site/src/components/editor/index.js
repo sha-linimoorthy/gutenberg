@@ -25,6 +25,7 @@ import {
 import {
 	EditorNotices,
 	EditorSnackbars,
+	PostLockedModal,
 	privateApis as editorPrivateApis,
 	store as editorStore,
 } from '@wordpress/editor';
@@ -288,6 +289,7 @@ export default function Editor( { listViewToggleElement, isLoading } ) {
 							secondarySidebar: secondarySidebarLabel,
 						} }
 					/>
+					<PostLockedModal />
 				</EditorProvider>
 			) }
 		</>
