@@ -18,7 +18,7 @@ import Page from '../page';
 import Table from '../table';
 import Link from '../routes/link';
 import AddedBy from '../list/added-by';
-import TemplateActions from '../template-actions';
+import PatternActions from '../pattern-actions';
 import AddNewTemplate from '../add-new-template';
 import { TEMPLATE_POST_TYPE } from '../../utils/constants';
 
@@ -67,7 +67,7 @@ export default function PageTemplates() {
 		{
 			header: <VisuallyHidden>{ __( 'Actions' ) }</VisuallyHidden>,
 			cell: ( template ) => (
-				<TemplateActions
+				<PatternActions
 					postType={ template.type }
 					postId={ template.id }
 				/>
