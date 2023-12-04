@@ -66,12 +66,7 @@ export default function PageTemplates() {
 		},
 		{
 			header: <VisuallyHidden>{ __( 'Actions' ) }</VisuallyHidden>,
-			cell: ( template ) => (
-				<PatternActions
-					postType={ template.type }
-					postId={ template.id }
-				/>
-			),
+			cell: ( template ) => <PatternActions item={ template } />,
 		},
 	];
 
