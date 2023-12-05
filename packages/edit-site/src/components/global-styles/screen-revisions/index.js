@@ -26,47 +26,38 @@ import SidebarFixedBottom from '../../sidebar-edit-mode/sidebar-fixed-bottom';
 import { store as editSiteStore } from '../../../store';
 import useGlobalStylesRevisions from './use-global-styles-revisions';
 import RevisionsButtons from './revisions-buttons';
+import Pagination from '../../pagination';
 
 const { GlobalStylesContext, areGlobalStyleConfigsEqual } = unlock(
 	blockEditorPrivateApis
 );
 
+const PAGE_SIZE = 10;
+
 function ScreenRevisions() {
 	const { goTo } = useNavigator();
 	const { user: currentEditorGlobalStyles, setUserConfig } =
 		useContext( GlobalStylesContext );
-	const { blocks, editorCanvasContainerView, revisionsCount } = useSelect(
-		( select ) => {
-			const {
-				getEntityRecord,
-				__experimentalGetCurrentGlobalStylesId,
-				__experimentalGetDirtyEntityRecords,
-			} = select( coreStore );
-			const isDirty = __experimentalGetDirtyEntityRecords().length > 0;
-			const globalStylesId = __experimentalGetCurrentGlobalStylesId();
-			const globalStyles = globalStylesId
-				? getEntityRecord( 'root', 'globalStyles', globalStylesId )
-				: undefined;
-			let _revisionsCount =
-				globalStyles?._links?.[ 'version-history' ]?.[ 0 ]?.count || 0;
-			// one for the reset item.
-			_revisionsCount++;
-			// one for any dirty changes (unsaved).
-			if ( isDirty ) {
-				_revisionsCount++;
-			}
-			return {
-				editorCanvasContainerView: unlock(
-					select( editSiteStore )
-				).getEditorCanvasContainerView(),
-				blocks: select( blockEditorStore ).getBlocks(),
-				revisionsCount: _revisionsCount,
-			};
-		},
+	const { blocks, editorCanvasContainerView } = useSelect(
+		( select ) => ( {
+			editorCanvasContainerView: unlock(
+				select( editSiteStore )
+			).getEditorCanvasContainerView(),
+			blocks: select( blockEditorStore ).getBlocks(),
+		} ),
 		[]
 	);
-	const { revisions, isLoading, hasUnsavedChanges } =
-		useGlobalStylesRevisions();
+	const [ currentPage, setCurrentPage ] = useState( 1 );
+	const { revisions, isLoading, hasUnsavedChanges, revisionsCount } =
+		useGlobalStylesRevisions( {
+			query: {
+				per_page: PAGE_SIZE,
+				page: currentPage,
+			},
+		} );
+
+	const numPages = Math.ceil( revisionsCount / PAGE_SIZE );
+
 	const [ currentlySelectedRevision, setCurrentlySelectedRevision ] =
 		useState( currentEditorGlobalStyles );
 	const [
@@ -144,9 +135,10 @@ function ScreenRevisions() {
 		<>
 			<ScreenHeader
 				title={
-					revisionsCount &&
-					// translators: %s: number of revisions.
-					sprintf( __( 'Revisions (%s)' ), revisionsCount )
+					revisionsCount
+						? // translators: %s: number of revisions.
+						  sprintf( __( 'Revisions (%s)' ), revisionsCount )
+						: null
 				}
 				description={ __(
 					'Click on previously saved styles to preview them. To restore a selected version to the editor, hit "Apply." When you\'re ready, use the Save button to save your changes.'
@@ -170,6 +162,14 @@ function ScreenRevisions() {
 							userRevisions={ revisions }
 							canApplyRevision={ isLoadButtonEnabled }
 						/>
+						{ numPages > 1 && (
+							<Pagination
+								currentPage={ currentPage }
+								numPages={ numPages }
+								changePage={ setCurrentPage }
+								totalItems={ revisionsCount }
+							/>
+						) }
 						{ isLoadButtonEnabled && (
 							<SidebarFixedBottom>
 								<Button
