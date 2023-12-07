@@ -157,41 +157,23 @@ function ScreenRevisions() {
 						onChange={ selectRevision }
 						selectedRevisionId={ currentlySelectedRevisionId }
 						userRevisions={ revisions }
-						canApplyRevision={ isLoadButtonEnabled }
+						canSelectedRevisionBeRestored={ isLoadButtonEnabled }
+						onApplyRevision={ () => {
+							if ( hasUnsavedChanges ) {
+								setIsLoadingRevisionWithUnsavedChanges( true );
+							} else {
+								restoreRevision( currentlySelectedRevision );
+							}
+						} }
 					/>
 					{ numPages > 1 && (
-						<Pagination
-							currentPage={ currentPage }
-							numPages={ numPages }
-							changePage={ setCurrentPage }
-							totalItems={ revisionsCount }
-						/>
-					) }
-					{ isLoadButtonEnabled && (
 						<SidebarFixedBottom>
-							<Button
-								variant="primary"
-								className="edit-site-global-styles-screen-revisions__button"
-								disabled={
-									! currentlySelectedRevisionId ||
-									currentlySelectedRevisionId === 'unsaved'
-								}
-								onClick={ () => {
-									if ( hasUnsavedChanges ) {
-										setIsLoadingRevisionWithUnsavedChanges(
-											true
-										);
-									} else {
-										restoreRevision(
-											currentlySelectedRevision
-										);
-									}
-								} }
-							>
-								{ currentlySelectedRevisionId === 'parent'
-									? __( 'Reset to defaults' )
-									: __( 'Apply' ) }
-							</Button>
+							<Pagination
+								currentPage={ currentPage }
+								numPages={ numPages }
+								changePage={ setCurrentPage }
+								totalItems={ revisionsCount }
+							/>
 						</SidebarFixedBottom>
 					) }
 				</div>
