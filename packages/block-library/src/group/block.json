@@ -51,6 +51,7 @@
 			}
 		},
 		"dimensions": {
+			"aspectRatio": true,
 			"minHeight": true
 		},
 		"__experimentalBorder": {
