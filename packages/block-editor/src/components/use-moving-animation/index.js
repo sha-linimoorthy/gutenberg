@@ -47,12 +47,16 @@ const getAbsolutePosition = ( element ) => {
  * @param {boolean} $1.adjustScrolling          Adjust the scroll position to the current block.
  * @param {boolean} $1.enableAnimation          Enable/Disable animation.
  * @param {*}       $1.triggerAnimationOnChange Variable used to trigger the animation if it changes.
+ * @param {string}  $1.elementSelector          A CSS selector string used to find the position of an element to animate from.
+ * @param {string}  $1.axis                     Axis to animate. Can be 'all', 'x', or 'y'.
  */
 function useMovingAnimation( {
 	isSelected,
 	adjustScrolling,
 	enableAnimation,
 	triggerAnimationOnChange,
+	elementSelector,
+	axis = 'all',
 } ) {
 	const ref = useRef();
 	const prefersReducedMotion = useReducedMotion() || ! enableAnimation;
@@ -62,10 +66,21 @@ function useMovingAnimation( {
 	);
 	const [ finishedAnimation, endAnimation ] = useReducer( counterReducer, 0 );
 	const [ transform, setTransform ] = useState( { x: 0, y: 0 } );
-	const previous = useMemo(
-		() => ( ref.current ? getAbsolutePosition( ref.current ) : null ),
-		[ triggerAnimationOnChange ]
-	);
+	const previous = useMemo( () => {
+		let previousPosition = null;
+
+		if ( ref.current && elementSelector ) {
+			const { ownerDocument } = ref.current;
+			const element = ownerDocument.querySelector( elementSelector );
+			if ( element ) {
+				previousPosition = element.getBoundingClientRect();
+			}
+		} else if ( ref.current ) {
+			previousPosition = getAbsolutePosition( ref.current );
+		}
+
+		return previousPosition;
+	}, [ elementSelector, triggerAnimationOnChange ] );
 
 	// Calculate the previous position of the block relative to the viewport and
 	// return a function to maintain that position by scrolling.
@@ -110,7 +125,7 @@ function useMovingAnimation( {
 		}
 
 		ref.current.style.transform = undefined;
-		const destination = getAbsolutePosition( ref.current );
+		const destination = ref.current.getBoundingClientRect();
 
 		triggerAnimation();
 		setTransform( {
@@ -138,8 +153,8 @@ function useMovingAnimation( {
 
 	useSpring( {
 		from: {
-			x: transform.x,
-			y: transform.y,
+			x: axis === 'all' || axis === 'x' ? transform.x : 0,
+			y: axis === 'all' || axis === 'y' ? transform.y : 0,
 		},
 		to: {
 			x: 0,
