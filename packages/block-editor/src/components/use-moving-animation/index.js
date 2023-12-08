@@ -24,13 +24,6 @@ import { getScrollContainer } from '@wordpress/dom';
  */
 const counterReducer = ( state ) => state + 1;
 
-const getAbsolutePosition = ( element ) => {
-	return {
-		top: element.offsetTop,
-		left: element.offsetLeft,
-	};
-};
-
 /**
  * Hook used to compute the styles required to move a div into a new position.
  *
@@ -76,7 +69,7 @@ function useMovingAnimation( {
 				previousPosition = element.getBoundingClientRect();
 			}
 		} else if ( ref.current ) {
-			previousPosition = getAbsolutePosition( ref.current );
+			previousPosition = ref.current.getBoundingClientRect();
 		}
 
 		return previousPosition;
