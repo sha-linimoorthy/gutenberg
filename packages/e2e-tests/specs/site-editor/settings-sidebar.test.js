@@ -19,8 +19,8 @@ async function toggleSidebar() {
 
 async function getActiveTabLabel() {
 	return await page.$eval(
-		'.edit-site-sidebar-edit-mode__panel-tab.is-active',
-		( element ) => element.getAttribute( 'aria-label' )
+		'div[aria-label="Editor settings"] [role="tab"][aria-selected="true"]',
+		( element ) => element.textContent
 	);
 }
 
@@ -57,9 +57,7 @@ describe( 'Settings sidebar', () => {
 		it( 'should open template tab by default if no block is selected', async () => {
 			await toggleSidebar();
 
-			expect( await getActiveTabLabel() ).toEqual(
-				'Template (selected)'
-			);
+			expect( await getActiveTabLabel() ).toEqual( 'Template' );
 		} );
 
 		it( "should show the currently selected template's title and description", async () => {
@@ -93,30 +91,26 @@ describe( 'Settings sidebar', () => {
 
 			await toggleSidebar();
 
-			expect( await getActiveTabLabel() ).toEqual( 'Block (selected)' );
+			expect( await getActiveTabLabel() ).toEqual( 'Block' );
 		} );
 	} );
 
 	describe( 'Tab switch based on selection', () => {
 		it( 'should switch to block tab if we select a block, when Template is selected', async () => {
 			await toggleSidebar();
-			expect( await getActiveTabLabel() ).toEqual(
-				'Template (selected)'
-			);
+			expect( await getActiveTabLabel() ).toEqual( 'Template' );
 			// By inserting the block is also selected.
 			await insertBlock( 'Heading' );
-			expect( await getActiveTabLabel() ).toEqual( 'Block (selected)' );
+			expect( await getActiveTabLabel() ).toEqual( 'Block' );
 		} );
 		it( 'should switch to Template tab when a block was selected and we select the Template', async () => {
 			await insertBlock( 'Heading' );
 			await toggleSidebar();
-			expect( await getActiveTabLabel() ).toEqual( 'Block (selected)' );
+			expect( await getActiveTabLabel() ).toEqual( 'Block' );
 			await page.evaluate( () => {
 				wp.data.dispatch( 'core/block-editor' ).clearSelectedBlock();
 			} );
-			expect( await getActiveTabLabel() ).toEqual(
-				'Template (selected)'
-			);
+			expect( await getActiveTabLabel() ).toEqual( 'Template' );
 		} );
 	} );
 } );
