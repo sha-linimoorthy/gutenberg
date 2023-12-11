@@ -132,12 +132,7 @@ function ScreenRevisions() {
 	return (
 		<>
 			<ScreenHeader
-				title={
-					revisionsCount
-						? // translators: %s: number of revisions.
-						  sprintf( __( 'Revisions (%s)' ), revisionsCount )
-						: null
-				}
+				title={ __( 'Revisions' ) }
 				description={ __(
 					'Click on previously saved styles to preview them. To restore a selected version to the editor, hit "Apply." When you\'re ready, use the Save button to save your changes.'
 				) }
