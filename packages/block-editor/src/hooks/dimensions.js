@@ -1,7 +1,12 @@
 /**
+ * External dependencies
+ */
+import classnames from 'classnames';
+
+/**
  * WordPress dependencies
  */
-import { useState, useEffect, useCallback } from '@wordpress/element';
+import { Platform, useState, useEffect, useCallback } from '@wordpress/element';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { getBlockSupport } from '@wordpress/blocks';
 import deprecated from '@wordpress/deprecated';
@@ -19,7 +24,6 @@ import { MarginVisualizer } from './margin';
 import { PaddingVisualizer } from './padding';
 import { store as blockEditorStore } from '../store';
 import { unlock } from '../lock-unlock';
-
 import { cleanEmptyObject } from './utils';
 
 export const DIMENSIONS_SUPPORT_KEY = 'dimensions';
@@ -130,6 +134,48 @@ function DimensionsPanelPure( { clientId, name, setAttributes, settings } ) {
 // will prevent re-renders unless props change, so only pass the needed props
 // and not the whole attributes object.
 export const DimensionsPanel = pure( DimensionsPanelPure );
+
+/**
+ * Determine whether there is block support for dimensions.
+ *
+ * @param {string} blockName Block name.
+ * @param {string} feature   Background image feature to check for.
+ *
+ * @return {boolean} Whether there is support.
+ */
+export function hasDimensionsSupport( blockName, feature = 'any' ) {
+	if ( Platform.OS !== 'web' ) {
+		return false;
+	}
+
+	const support = getBlockSupport( blockName, DIMENSIONS_SUPPORT_KEY );
+
+	if ( support === true ) {
+		return true;
+	}
+
+	if ( feature === 'any' ) {
+		return !! support?.dimensions;
+	}
+
+	return !! support?.[ feature ];
+}
+
+export default {
+	useBlockProps,
+	attributeKeys: [ 'style' ],
+	hasSupport( name ) {
+		return hasDimensionsSupport( name, 'aspectRatio' );
+	},
+};
+
+function useBlockProps( { style } ) {
+	const className = classnames( {
+		'has-aspect-ratio': !! style?.dimensions?.aspectRatio,
+	} );
+
+	return { className };
+}
 
 /**
  * @deprecated
