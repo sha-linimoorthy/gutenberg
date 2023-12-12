@@ -13,7 +13,7 @@
 -   `FontSizePicker`: Add opt-in prop for 40px default size ([#56804](https://github.com/WordPress/gutenberg/pull/56804)).
 
 ### Bug Fix
--   `PaletteEdit`: ensure number changes to custom names are classes as non-default ([#56932](https://github.com/WordPress/gutenberg/pull/56932)).
+-   `PaletteEdit`: refactor custom color/gradient name assignment ([#56932](https://github.com/WordPress/gutenberg/pull/56932)).
 -   `PaletteEdit`: temporary custom gradient not saving ([#56896](https://github.com/WordPress/gutenberg/pull/56896)).
 -   `ToggleGroupControl`: react correctly to external controlled updates ([#56678](https://github.com/WordPress/gutenberg/pull/56678)).
 -   `ToolsPanel`: fix a performance issue ([#56770](https://github.com/WordPress/gutenberg/pull/56770)).
