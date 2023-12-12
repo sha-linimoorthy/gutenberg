@@ -372,9 +372,6 @@ export default function DimensionsPanel( {
 			setImmutably( value, [ 'dimensions', 'aspectRatio' ], newValue )
 		);
 	};
-	// const resetAspectRatioValue = () => {
-	// 	setAspectRatioValue( undefined );
-	// };
 	const hasAspectRatioValue = () => !! value?.dimensions?.aspectRatio;
 
 	// Child Layout
