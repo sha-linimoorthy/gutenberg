@@ -119,6 +119,8 @@ function EditorCanvasContainer( {
 	}
 
 	const shouldShowCloseButton = onClose || closeButtonLabel;
+	const hasActions = actions && actions.length;
+	const shouldFocusFirstTabbableElement = hasActions || shouldShowCloseButton;
 
 	return (
 		<EditorCanvasContainerFill>
@@ -126,13 +128,14 @@ function EditorCanvasContainer( {
 				{ /* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */ }
 				<section
 					className="edit-site-editor-canvas-container"
-					ref={ shouldShowCloseButton ? focusOnMountRef : null }
+					ref={
+						shouldFocusFirstTabbableElement ? focusOnMountRef : null
+					}
 					onKeyDown={ closeOnEscape }
 					aria-label={ title }
 				>
 					<div className="edit-site-editor-canvas-container__actions">
-						{ actions &&
-							actions.length &&
+						{ hasActions &&
 							actions.map(
 								( { label, onClick, icon, ...extraProps } ) => (
 									<Button
