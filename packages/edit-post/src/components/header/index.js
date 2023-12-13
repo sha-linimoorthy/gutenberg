@@ -70,15 +70,16 @@ function Header( {
 		isEditingTemplate,
 		isPublishSidebarOpened,
 		showIconLabels,
+		isEditingPattern,
 	} = useSelect( ( select ) => {
 		const { get: getPreference } = select( preferencesStore );
-
+		const renderingMode = select( editorStore ).getRenderingMode();
 		return {
 			blockSelectionStart:
 				select( blockEditorStore ).getBlockSelectionStart(),
 			hasActiveMetaboxes: select( editPostStore ).hasMetaBoxes(),
-			isEditingTemplate:
-				select( editorStore ).getRenderingMode() === 'template-only',
+			isEditingTemplate: renderingMode === 'template-only',
+			isEditingPattern: renderingMode === 'pattern-only',
 			isPublishSidebarOpened:
 				select( editPostStore ).isPublishSidebarOpened(),
 			hasFixedToolbar: getPreference( 'core/edit-post', 'fixedToolbar' ),
@@ -125,7 +126,8 @@ function Header( {
 								'selected-block-tools-wrapper',
 								{
 									'is-collapsed':
-										isEditingTemplate &&
+										( isEditingTemplate ||
+											isEditingPattern ) &&
 										isBlockToolsCollapsed,
 								}
 							) }
@@ -136,35 +138,40 @@ function Header( {
 							ref={ blockToolbarRef }
 							name="block-toolbar"
 						/>
-						{ isEditingTemplate && hasBlockSelected && (
-							<Button
-								className="edit-post-header__block-tools-toggle"
-								icon={ isBlockToolsCollapsed ? next : previous }
-								onClick={ () => {
-									setIsBlockToolsCollapsed(
-										( collapsed ) => ! collapsed
-									);
-								} }
-								label={
-									isBlockToolsCollapsed
-										? __( 'Show block tools' )
-										: __( 'Hide block tools' )
-								}
-							/>
-						) }
+						{ ( isEditingTemplate || isEditingPattern ) &&
+							hasBlockSelected && (
+								<Button
+									className="edit-post-header__block-tools-toggle"
+									icon={
+										isBlockToolsCollapsed ? next : previous
+									}
+									onClick={ () => {
+										setIsBlockToolsCollapsed(
+											( collapsed ) => ! collapsed
+										);
+									} }
+									label={
+										isBlockToolsCollapsed
+											? __( 'Show block tools' )
+											: __( 'Hide block tools' )
+									}
+								/>
+							) }
 					</>
 				) }
 				<div
 					className={ classnames( 'edit-post-header__center', {
 						'is-collapsed':
-							isEditingTemplate &&
+							( isEditingTemplate || isEditingPattern ) &&
 							hasBlockSelected &&
 							! isBlockToolsCollapsed &&
 							hasFixedToolbar &&
 							isLargeViewport,
 					} ) }
 				>
-					{ isEditingTemplate && <DocumentBar /> }
+					{ ( isEditingTemplate || isEditingPattern ) && (
+						<DocumentBar />
+					) }
 				</div>
 			</motion.div>
 			<motion.div
