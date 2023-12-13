@@ -94,8 +94,7 @@ export function SidebarComplementaryAreaFills() {
 			SIDEBAR_BLOCK,
 			SIDEBAR_TEMPLATE,
 		].includes( _sidebar );
-		const settings = select( editSiteStore ).getSettings();
-		const { getCanvasMode } = unlock( select( editSiteStore ) );
+		const { settings, getCanvasMode } = unlock( select( editSiteStore ) );
 
 		return {
 			sidebar: _sidebar,
