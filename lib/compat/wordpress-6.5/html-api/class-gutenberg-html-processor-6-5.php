@@ -132,7 +132,7 @@
  * @see WP_HTML_Tag_Processor
  * @see https://html.spec.whatwg.org/
  */
-class Gutenberg_HTML_Processor extends Gutenberg_HTML_Tag_Processor_6_5 {
+class Gutenberg_HTML_Processor_6_5 extends Gutenberg_HTML_Tag_Processor_6_5 {
 	/**
 	 * The maximum number of bookmarks allowed to exist at any given time.
 	 *
