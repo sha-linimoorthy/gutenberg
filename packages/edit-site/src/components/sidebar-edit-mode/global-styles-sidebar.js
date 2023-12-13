@@ -115,12 +115,6 @@ export default function GlobalStylesSidebar() {
 							isPressed={ isStyleBookOpened }
 							disabled={ shouldClearCanvasContainerView }
 							onClick={ () => {
-								console.log( 'isRevisionsOpened', isRevisionsOpened );
-								if ( isRevisionsOpened ) {
-									// do something here.
-									// Load style sheets on and off.
-
-								}
 								setIsListViewOpened(
 									isStyleBookOpened && showListViewByDefault
 								);
