@@ -91,8 +91,6 @@ export default function GlobalStylesSidebar() {
 		}
 	};
 
-	console.log( 'isRevisionsOpened', isRevisionsOpened );
-
 	return (
 		<DefaultSidebar
 			className="edit-site-global-styles-sidebar"
@@ -117,9 +115,11 @@ export default function GlobalStylesSidebar() {
 							isPressed={ isStyleBookOpened }
 							disabled={ shouldClearCanvasContainerView }
 							onClick={ () => {
+								console.log( 'isRevisionsOpened', isRevisionsOpened );
 								if ( isRevisionsOpened ) {
 									// do something here.
 									// Load style sheets on and off.
+
 								}
 								setIsListViewOpened(
 									isStyleBookOpened && showListViewByDefault

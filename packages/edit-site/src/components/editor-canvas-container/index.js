@@ -10,9 +10,9 @@ import {
 import { ESCAPE } from '@wordpress/keycodes';
 import { __ } from '@wordpress/i18n';
 import { useDispatch, useSelect } from '@wordpress/data';
-import { closeSmall } from '@wordpress/icons';
 import { useFocusOnMount, useFocusReturn } from '@wordpress/compose';
 import { store as preferencesStore } from '@wordpress/preferences';
+import { closeSmall } from '@wordpress/icons';
 
 /**
  * Internal dependencies
@@ -53,6 +53,7 @@ function EditorCanvasContainer( {
 	closeButtonLabel,
 	onClose,
 	enableResizing = false,
+	actions,
 } ) {
 	const { editorCanvasContainerView, showListViewByDefault } = useSelect(
 		( select ) => {
@@ -129,14 +130,30 @@ function EditorCanvasContainer( {
 					onKeyDown={ closeOnEscape }
 					aria-label={ title }
 				>
-					{ shouldShowCloseButton && (
-						<Button
-							className="edit-site-editor-canvas-container__close-button"
-							icon={ closeSmall }
-							label={ closeButtonLabel || __( 'Close' ) }
-							onClick={ onCloseContainer }
-							showTooltip={ false }
-						/>
+					{ actions && actions.length && (
+						<div className="edit-site-editor-canvas-container__actions">
+							{ actions.map(
+								( { label, onClick, icon, ...extraProps } ) => (
+									<Button
+										key={ label }
+										className="edit-site-editor-canvas-container__action-button"
+										onClick={ onClick }
+										icon={ icon }
+										label={ label }
+										{ ...extraProps }
+									/>
+								)
+							) }
+							{ shouldShowCloseButton && (
+								<Button
+									className="edit-site-editor-canvas-container__action-button"
+									icon={ closeSmall }
+									label={ closeButtonLabel || __( 'Close' ) }
+									onClick={ onCloseContainer }
+									showTooltip={ false }
+								/>
+							) }
+						</div>
 					) }
 					{ childrenWithProps }
 				</section>
