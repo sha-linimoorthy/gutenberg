@@ -15,7 +15,33 @@
  */
 import { useRegistry } from '@wordpress/data';
 
-const patternDependenciesRegistry = new WeakMap();
+// Naming is hard.
+//
+// @see useParsePatternDependencies
+const cache = new WeakMap();
+
+/**
+ * Hook that returns a function, `parsePatternDependencies`, but bound
+ * specifically to the context's registry:
+ *
+ * @example
+ * ```js
+ * const parsePatternDependencies = useParsePatternDependencies();
+ * parsePatternDependencies( selectedPattern );
+ * ```
+ *
+ * @see parsePatternDependencies
+ *
+ * @return {Function} A bound function
+ */
+export function useParsePatternDependencies() {
+	const registry = useRegistry();
+
+	if ( ! cache.has( registry ) ) {
+		cache.set( registry, parsePatternDependencies.bind( null, new Map() ) );
+	}
+	return cache.get( registry );
+}
 
 /**
  * Parse a given pattern and traverse its contents to detect any subsequent
@@ -23,7 +49,7 @@ const patternDependenciesRegistry = new WeakMap();
  * internal dependency graph. If a circular dependency is detected, an
  * error will be thrown.
  *
- * Exported for testing purposes only.
+ * EXPORTED FOR TESTING PURPOSES ONLY.
  *
  * @param {Map<string, Set<string>>} deps           Map of pattern dependencies.
  * @param {Object}                   pattern        Pattern.
@@ -49,7 +75,7 @@ export function parsePatternDependencies( deps, { name, blocks } ) {
  * Declare that pattern `a` depends on pattern `b`. If a circular
  * dependency is detected, an error will be thrown.
  *
- * Exported for testing purposes only.
+ * EXPORTED FOR TESTING PURPOSES ONLY.
  *
  * @param {Map<string, Set<string>>} deps Map of pattern dependencies.
  * @param {string}                   a    Slug for pattern A.
@@ -105,16 +131,4 @@ function hasCycle(
 	// Remove the current node from the current path when backtracking
 	currentPath.delete( slug );
 	return false;
-}
-
-export function usePatternRecursionDetector() {
-	const registry = useRegistry();
-
-	if ( ! patternDependenciesRegistry.has( registry ) ) {
-		patternDependenciesRegistry.set(
-			registry,
-			parsePatternDependencies.bind( null, new Map() )
-		);
-	}
-	return patternDependenciesRegistry.get( registry );
 }
