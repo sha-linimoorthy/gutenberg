@@ -47,6 +47,7 @@ function ScreenRevisions() {
 		[]
 	);
 	const [ currentPage, setCurrentPage ] = useState( 1 );
+	const [ currentRevisions, setCurrentRevisions ] = useState( [] );
 	const { revisions, isLoading, hasUnsavedChanges, revisionsCount } =
 		useGlobalStylesRevisions( {
 			query: {
@@ -100,6 +101,12 @@ function ScreenRevisions() {
 		}
 	}, [ editorCanvasContainerView ] );
 
+	useEffect( () => {
+		if ( ! isLoading && revisions.length ) {
+			setCurrentRevisions( revisions );
+		}
+	}, [ revisions, isLoading ] );
+
 	const firstRevision = revisions[ 0 ];
 	const currentlySelectedRevisionId = currentlySelectedRevision?.id;
 	const shouldSelectFirstItem =
@@ -138,7 +145,17 @@ function ScreenRevisions() {
 				) }
 				onBack={ onCloseRevisions }
 			/>
-			{ isLoading && (
+			{ numPages > 1 && (
+				<Pagination
+					className="edit-site-global-styles-screen-revisions__pagination"
+					currentPage={ currentPage }
+					numPages={ numPages }
+					changePage={ setCurrentPage }
+					totalItems={ revisionsCount }
+					disabled={ isLoading }
+				/>
+			) }
+			{ ! currentRevisions.length && (
 				<Spinner className="edit-site-global-styles-screen-revisions__loading" />
 			) }
 			<>
@@ -151,24 +168,34 @@ function ScreenRevisions() {
 					<RevisionsButtons
 						onChange={ selectRevision }
 						selectedRevisionId={ currentlySelectedRevisionId }
-						userRevisions={ revisions }
-						canSelectedRevisionBeRestored={ isLoadButtonEnabled }
-						onApplyRevision={ () => {
-							if ( hasUnsavedChanges ) {
-								setIsLoadingRevisionWithUnsavedChanges( true );
-							} else {
-								restoreRevision( currentlySelectedRevision );
-							}
-						} }
+						userRevisions={ currentRevisions }
+						canApplyRevision={ isLoadButtonEnabled }
 					/>
-					{ numPages > 1 && (
+					{ isLoadButtonEnabled && (
 						<SidebarFixedBottom>
-							<Pagination
-								currentPage={ currentPage }
-								numPages={ numPages }
-								changePage={ setCurrentPage }
-								totalItems={ revisionsCount }
-							/>
+							<Button
+								variant="primary"
+								className="edit-site-global-styles-screen-revisions__button"
+								disabled={
+									! currentlySelectedRevisionId ||
+									currentlySelectedRevisionId === 'unsaved'
+								}
+								onClick={ () => {
+									if ( hasUnsavedChanges ) {
+										setIsLoadingRevisionWithUnsavedChanges(
+											true
+										);
+									} else {
+										restoreRevision(
+											currentlySelectedRevision
+										);
+									}
+								} }
+							>
+								{ currentlySelectedRevisionId === 'parent'
+									? __( 'Reset to defaults' )
+									: __( 'Apply' ) }
+							</Button>
 						</SidebarFixedBottom>
 					) }
 				</div>
