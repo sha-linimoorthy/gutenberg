@@ -135,35 +135,32 @@ function ScreenRevisions() {
 	// and it is different from the current editor styles.
 	const isLoadButtonEnabled =
 		!! currentlySelectedRevisionId && ! selectedRevisionMatchesEditorStyles;
+	const hasRevisions = !! currentRevisions.length;
 
 	return (
 		<>
 			<ScreenHeader
-				title={ __( 'Revisions' ) }
+				title={
+					revisionsCount &&
+					// translators: %s: number of revisions.
+					sprintf( __( 'Revisions (%s)' ), revisionsCount )
+				}
 				description={ __(
 					'Click on previously saved styles to preview them. To restore a selected version to the editor, hit "Apply." When you\'re ready, use the Save button to save your changes.'
 				) }
 				onBack={ onCloseRevisions }
 			/>
-			{ numPages > 1 && (
-				<Pagination
-					className="edit-site-global-styles-screen-revisions__pagination"
-					currentPage={ currentPage }
-					numPages={ numPages }
-					changePage={ setCurrentPage }
-					totalItems={ revisionsCount }
-					disabled={ isLoading }
-				/>
-			) }
-			{ ! currentRevisions.length && (
+			{ ! hasRevisions && (
 				<Spinner className="edit-site-global-styles-screen-revisions__loading" />
 			) }
 			<>
-				<Revisions
-					blocks={ blocks }
-					userConfig={ currentlySelectedRevision }
-					onClose={ onCloseRevisions }
-				/>
+				{ hasRevisions && (
+					<Revisions
+						blocks={ blocks }
+						userConfig={ currentlySelectedRevision }
+						onClose={ onCloseRevisions }
+					/>
+				) }
 				<div className="edit-site-global-styles-screen-revisions">
 					<RevisionsButtons
 						onChange={ selectRevision }
@@ -171,8 +168,10 @@ function ScreenRevisions() {
 						userRevisions={ currentRevisions }
 						canApplyRevision={ isLoadButtonEnabled }
 					/>
-					{ isLoadButtonEnabled && (
-						<SidebarFixedBottom>
+				</div>
+				{ hasRevisions && (
+					<div className="edit-site-global-styles-screen-revisions__footer">
+						{ isLoadButtonEnabled && (
 							<Button
 								variant="primary"
 								className="edit-site-global-styles-screen-revisions__button"
@@ -194,11 +193,21 @@ function ScreenRevisions() {
 							>
 								{ currentlySelectedRevisionId === 'parent'
 									? __( 'Reset to defaults' )
-									: __( 'Apply' ) }
+									: __( 'Apply selected' ) }
 							</Button>
-						</SidebarFixedBottom>
-					) }
-				</div>
+						) }
+						{ numPages > 1 && (
+							<Pagination
+								className="edit-site-global-styles-screen-revisions__pagination"
+								currentPage={ currentPage }
+								numPages={ numPages }
+								changePage={ setCurrentPage }
+								totalItems={ revisionsCount }
+								disabled={ isLoading }
+							/>
+						) }
+					</div>
+				) }
 				{ isLoadingRevisionWithUnsavedChanges && (
 					<ConfirmDialog
 						isOpen={ isLoadingRevisionWithUnsavedChanges }
