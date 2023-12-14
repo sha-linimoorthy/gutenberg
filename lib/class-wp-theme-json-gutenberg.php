@@ -2427,7 +2427,6 @@ class WP_Theme_JSON_Gutenberg {
 			$variation_selectors = array();
 			$variation_nodes     = array();
 
-			// TODO: Should we be supporting recursive variations and block type styles?
 			foreach ( $variations as $variation => $variation_node ) {
 				$variation_selector    = $selectors[ $name ]['styleVariations'][ $variation ];
 				$variation_selectors[] = array(
